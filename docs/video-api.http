@@ -1,0 +1,91 @@
+# -*- coding: utf-8 -*-
+# @Author  : itswcg
+# @File    : video-api.http
+# @Time    : 18-12-20 上午11:12
+# @Blog    : https://blog.itswcg.com
+# @github  : https://github.com/itswcg
+
+# PyCharm http client
+
+### 登录
+POST {{base_url}}/login/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "nickName": "itswcg",
+  "passWord": "itswcg"
+}
+
+### 获取用户信息
+GET {{base_url}}/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 更新用户信息
+PATCH {{base_url}}/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+{
+}
+
+### 获取我的视频
+GET {{base_url}}/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 上传视频
+POST {{base_url}}/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 获取推荐视频
+GET {{base_url}}/video/？type=recommend
+Accept: application/json
+Content-Type: application/json
+
+### 获取最近下载视频
+GET {{base_url}}/video/?type=recent
+Accept: application/json
+Content-Type: application/json
+
+### 获取我的任务
+GET {{base_url}}/task/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 创建任务
+POST {{base_url}}/task/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 获取我的通知
+GET {{base_url}}/notice/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 标记通知为已读
+POST {{base_url}}/notice/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 评论
+POST {{base_url}}/comment/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+### 点赞
+POST {{base_url}}/like/
+Accept: application/json
+Content-Type: application/json
+
