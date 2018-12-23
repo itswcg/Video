@@ -20,11 +20,16 @@ async def trans(conn, sql):
         return res
 
 
-async def create_user(conn, nickName, passWord):
+async def get_user_by_username(conn, username):
+    pass
+
+
+async def get_or_create_user(conn, username, password):
     """
     Create user
     """
-    sql = User.insert().values(nickName=nickName, passWord=passWord)
+    get_user = User.select().where()
+    sql = User.insert().values(username=username, password=password)
     res = await trans(conn, sql)
 
 
@@ -32,4 +37,13 @@ async def get_user(conn, token):
     """
     Token to user
     """
-    sql = Token.select()
+    sql = Token.select().where(token == token)
+
+
+async def update_user(conn, nickName, passWord):
+    user = User.select().where(nickName == nickName)
+    User.update().where(nickName=nickName).values(passWord=passWord)
+
+
+async def delete_user(conn, nickName):
+    User.delete().where(nickName == nickName)
