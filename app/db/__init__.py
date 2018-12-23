@@ -7,7 +7,7 @@
 
 import aiomysql, aioredis
 from sqlalchemy import create_engine, MetaData
-from .models import (User, Token, Video, Task, Notice, Comment)
+from app.db.models import (User, Token, Video, Task, Notice, Comment)
 from app.config import CONFIG
 
 MYSQL_CONFIG = CONFIG.MYSQL
