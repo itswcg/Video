@@ -6,7 +6,7 @@
 # @github  : https://github.com/itswcg
 
 
-from sanic import Sanic
+from sanic import Sanic, Blueprint
 from sanic.views import HTTPMethodView
 from sanic.response import text, json
 from sanic.log import logger
@@ -16,16 +16,18 @@ from app.utils.decorator import login_required
 from app.utils.functions import encrypt_password
 from app.api import constants as cs
 
-app = Sanic('some_name')
+from app.db.models import (User, Token, Video, Task, Notice, Comment)
+
+api_bp = Blueprint('api', url_prefix='/api')
 
 
 class UserView(HTTPMethodView):
 
     @login_required()
-    def get(self, request):
+    async def get(self, request):
         return text('I am get method')
 
-    def post(self, request):
+    async def post(self, request):
         """login or create user"""
         data = request.json
 
@@ -36,31 +38,29 @@ class UserView(HTTPMethodView):
             pwd = data['password']
             password = encrypt_password(pwd)
 
-            with request.app.db.acquire() as conn:
-                res = await sql.get_user_by_username(conn, username)
-                if res:
-                    return json({cs.MSG_KEYWORD: cs.MSG_ERROR_ALREADY_REGISTER}, 400)
+            user = await request.app.db.create(User, username=username, password=password)
 
-            with request.app.db.acquire() as conn:
-                await sql.get_or_create_user(conn, username, password)
-
-            results = {}
+            results = {'user': user}
             return json(results, 201)
 
-    def put(self, request):
+    async def put(self, request):
         return text('I am put method')
 
-    def patch(self, request):
+    async def patch(self, request):
         return text('I am patch method')
 
-    def delete(self, request):
+    async def delete(self, request):
         return text('I am delete method')
 
 
-class Video(HTTPMethodView):
+class VideoView(HTTPMethodView):
 
     def get(self, request):
         pass
 
     def post(self, request):
         pass
+
+
+api_bp.add_route(UserView.as_view(), '/user')
+api_bp.add_route(VideoView.as_view(), '/video')

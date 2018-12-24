@@ -5,36 +5,28 @@
 # @Blog    : https://blog.itswcg.com
 # @github  : https://github.com/itswcg
 
-import aiomysql, aioredis
-from sqlalchemy import create_engine, MetaData
-from app.db.models import (User, Token, Video, Task, Notice, Comment)
+import aioredis
+import peewee_async
+
 from app.config import CONFIG
 
 MYSQL_CONFIG = CONFIG.MYSQL
 REDIS_CONFIG = CONFIG.REDIS
-MYSQL_URI = "mysql+pymysql://{}:{}@{}:{}/{}".format(MYSQL_CONFIG['USER'], MYSQL_CONFIG['PASSWORD'],
-                                                    MYSQL_CONFIG['HOST'], MYSQL_CONFIG['PORT'], MYSQL_CONFIG['NAME'])
 
-
-def create_table():
-    """
-    Create table
-    """
-    engine = create_engine(MYSQL_URI, isolation_level='AUTOCOMMIT')
-    meta = MetaData()
-    meta.create_all(bind=engine, tables=[User, Token, Video, Task, Notice, Comment])
+database = peewee_async.PooledMySQLDatabase(
+    host=MYSQL_CONFIG['HOST'],
+    port=int(MYSQL_CONFIG['PORT']),
+    user=MYSQL_CONFIG['USER'],
+    password=MYSQL_CONFIG['PASSWORD'],
+    database=MYSQL_CONFIG['NAME'], charset='utf8mb4', autocommit=True)
 
 
 async def init_db(app, loop):
     """
     Init db
     """
-    app.db = await aiomysql.create_pool(
-        host=MYSQL_CONFIG['HOST'],
-        port=int(MYSQL_CONFIG['PORT']),
-        user=MYSQL_CONFIG['USER'],
-        password=MYSQL_CONFIG['PASSWORD'],
-        db=MYSQL_CONFIG['NAME'], loop=loop, charset='utf8mb4', autocommit=True)
+    app.db = peewee_async.Manager(database)
+    app.db.connect()
 
     app.redis_pool = await aioredis.create_pool(
         (REDIS_CONFIG['HOST'], REDIS_CONFIG['PORT']),
@@ -51,10 +43,23 @@ async def close_db(app, loop):
     Close db
     """
     app.db.close()
-    await app.db.wait_closed()
 
     app.redis_pool.close()
     await app.redis_pool.wait_closed()
+
+
+def create_table():
+    """
+    Create table
+    """
+    from app.db.models import (User, Token, Video, Task, Notice, Comment)
+
+    User.create_table(True)
+    Token.create_table(True)
+    Video.create_table(True)
+    Task.create_table(True)
+    Notice.create_table(True)
+    Comment.create_table(True)
 
 
 if __name__ == '__main__':

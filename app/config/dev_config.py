@@ -9,6 +9,7 @@ from .config import BaseConfig
 
 
 class DevConfig(BaseConfig):
+    SECRET_KEY = 'owqjifk213sfsals89fil_ajsdfhkh;ds'
     MYSQL = {
         'NAME': 'video',
         'USER': 'root',

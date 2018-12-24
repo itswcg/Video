@@ -7,55 +7,51 @@
 
 import datetime
 
-import sqlalchemy as sa
+from app.config import CONFIG
 
-metadata = sa.MetaData()
+from peewee import Model, CharField, IntegerField, DateTimeField, ForeignKeyField, BooleanField, PrimaryKeyField
 
-User = sa.Table('user', metadata,
-                sa.Column('id', sa.Integer, primary_key=True),
-                sa.Column('username', sa.String(20), index=True, nullable=False),
-                sa.Column('password', sa.String(218), nullable=False),
-                sa.Column('avatar', sa.String(512), default=''),
-                sa.Column('email', sa.String(52), index=True),
-                sa.Column('phone', sa.String(11), index=True),
 
-                sa.Column('create_time', sa.DateTime, default=datetime.datetime.now()))
+class BaseModel(Model):
+    create_time = DateTimeField(verbose_name='create_time', default=datetime.datetime.now)
 
-Token = sa.Table('token', metadata,
-                 sa.Column('id', sa.Integer, primary_key=True),
-                 sa.Column('user_id', sa.Integer, nullable=False),
-                 sa.Column('token', sa.String(218), index=True, nullable=False),
+    class Meta:
+        from app.db import database
+        database = database
 
-                 sa.Column('create_time', sa.DateTime, default=datetime.datetime.now()))
 
-Video = sa.Table('video', metadata,
-                 sa.Column('id', sa.Integer, primary_key=True),
-                 sa.Column('user_id', sa.Integer, index=True, nullable=False),
-                 sa.Column('video_url', sa.String(512), nullable=False),
-                 sa.Column('name', sa.String(52), nullable=False),
+class User(BaseModel):
+    username = CharField(verbose_name='username', max_length=32, unique=True)
+    password = CharField(verbose_name='password', max_length=512)
+    avatar = CharField(verbose_name='avatar', max_length=512, default=CONFIG.DEFAULT_USER_AVATAR)
+    email = CharField(verbose_name='email', max_length=52, null=True)
+    phone = CharField(verbose_name='phone', max_length=11, null=True)
 
-                 sa.Column('create_time', sa.DateTime, default=datetime.datetime.now()))
 
-Task = sa.Table('task', metadata,
-                sa.Column('id', sa.Integer, primary_key=True),
-                sa.Column('user_id', sa.Integer, index=True, nullable=False),
-                sa.Column('name', sa.String(52), nullable=False),
-                sa.Column('complete', sa.Boolean, default=False),
+class Token(BaseModel):
+    user = ForeignKeyField(User, related_name='token')
+    token = CharField(verbose_name='token', max_length=512)
 
-                sa.Column('create_time', sa.DateTime, default=datetime.datetime.now()))
 
-Notice = sa.Table('notice', metadata,
-                  sa.Column('id', sa.Integer, primary_key=True),
-                  sa.Column('user_id', sa.Integer, index=True, nullable=False),
-                  sa.Column('content', sa.String(128), nullable=False),
-                  sa.Column('is_read', sa.Boolean, default=False),
+class Video(BaseModel):
+    user = ForeignKeyField(User, related_name='video')
+    video_url = CharField(verbose_name='video_url', max_length=512)
+    name = CharField(verbose_name='name', max_length=52)
 
-                  sa.Column('create_time', sa.DateTime, default=datetime.datetime.now()))
 
-Comment = sa.Table('comment', metadata,
-                   sa.Column('id', sa.Integer, primary_key=True),
-                   sa.Column('user_id', sa.Integer, nullable=False),
-                   sa.Column('video_id', sa.Integer, index=True, nullable=False),
-                   sa.Column('content', sa.String(1024), nullable=False),
+class Task(BaseModel):
+    user = ForeignKeyField(User, related_name='task')
+    name = CharField(verbose_name='task', max_length=32)
+    complete = BooleanField(verbose_name='complete', default=False)
 
-                   sa.Column('create_time', sa.DateTime, default=datetime.datetime.now()))
+
+class Notice(BaseModel):
+    user = ForeignKeyField(User, related_name='notice')
+    content = CharField(verbose_name='content', max_length=128)
+    is_read = BooleanField(verbose_name='is_read', default=False)
+
+
+class Comment(BaseModel):
+    user = ForeignKeyField(User, related_name='comment')
+    video = ForeignKeyField(Video, related_name='comment')
+    content = CharField(verbose_name='content', max_length=1024)
