@@ -49,7 +49,7 @@ Content-Type: application/json
 Authorization: Token {{user_token}}
 
 ### 获取推荐视频
-GET {{base_url}}/video/？type=recommend
+GET {{base_url}}/video/?type=recommend
 Accept: application/json
 Content-Type: application/json
 

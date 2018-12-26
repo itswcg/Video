@@ -6,12 +6,11 @@
 # @github  : https://github.com/itswcg
 
 
-from sanic import Sanic, Blueprint
+from sanic import Blueprint
 from sanic.views import HTTPMethodView
-from sanic.response import text, json
+from sanic.response import json
 from sanic.log import logger
 
-from app.db import sql
 from app.utils.decorator import login_required
 from app.utils.functions import encrypt_password, generate_token
 from app.api import constants as cs
@@ -88,14 +87,63 @@ class UserView(HTTPMethodView):
 
 
 class VideoView(HTTPMethodView):
+
+    async def get(self, request, *args, **kwargs):
+        """Get recommend or recent video"""
+        data = request.raw_args
+        if 'type' in data:
+            if data['type'] == 'recommend':
+                pass
+            elif data['type'] == 'recent':
+                pass
+
+        return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
+
+
+class MyVideoView(HTTPMethodView):
     decorators = [login_required()]
 
-    def get(self, request):
+    async def get(self, request):
         pass
 
-    def post(self, request):
+    async def post(self, request):
         pass
+
+
+class TaskView(HTTPMethodView):
+    decorators = [login_required()]
+
+    async def get(self, request):
+        pass
+
+    async def post(self, request):
+        pass
+
+
+class NoticeView(HTTPMethodView):
+    decorators = [login_required()]
+
+    async def get(self, request):
+        pass
+
+    async def post(self, request):
+        pass
+
+
+@login_required()
+async def comment(request):
+    pass
+
+
+@login_required()
+async def like(request):
+    pass
 
 
 api_bp.add_route(UserView.as_view(), '/user')
 api_bp.add_route(VideoView.as_view(), '/video')
+api_bp.add_route(MyVideoView.as_view(), '/my-video')
+api_bp.add_route(TaskView.as_view(), '/task')
+api_bp.add_route(NoticeView.as_view(), '/notice')
+api_bp.add_route(comment, '/comment', methods=['POST'])
+api_bp.add_route(like, '/like', methods=['POST'])

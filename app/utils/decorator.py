@@ -18,7 +18,7 @@ async def check_request_for_authorization_status(request):
             token = authorization[6:]
             try:
                 token_user = await request.app.db.get(Token, token=token)
-                user_id = token_user._data['user_id']
+                user_id = getattr(token_user, 'id')
                 user = await request.app.db.get(User, id=user_id)
             except:
                 pass

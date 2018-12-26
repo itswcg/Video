@@ -35,8 +35,9 @@ class Token(BaseModel):
 
 class Video(BaseModel):
     user = ForeignKeyField(User, related_name='video')
-    video_url = CharField(verbose_name='video_url', max_length=512)
     name = CharField(verbose_name='name', max_length=52)
+    video_url = CharField(verbose_name='video_url', max_length=512)
+    cover_url = CharField(verbose_name='cover_url', max_length=512)
 
 
 class Task(BaseModel):
