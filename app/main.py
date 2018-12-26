@@ -12,11 +12,18 @@ from app.db import init_db, close_db
 from app.api.views import api_bp
 
 app = Sanic('video')
+app.config.LOGO = 'itswcg'
 app.config.from_object(CONFIG)
 CORS(app, automatic_options=True)  # cors
 
 app.register_listener(init_db, 'before_server_start')
 app.register_listener(close_db, 'after_server_stop')
+
+
+@app.middleware('response')
+async def custom_banner(request, response):
+    response.headers["content-type"] = "application/json; charset=utf-8"
+
 
 app.blueprint(api_bp)
 

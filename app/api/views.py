@@ -13,19 +13,24 @@ from sanic.log import logger
 
 from app.db import sql
 from app.utils.decorator import login_required
-from app.utils.functions import encrypt_password
+from app.utils.functions import encrypt_password, generate_token
 from app.api import constants as cs
 
 from app.db.models import (User, Token, Video, Task, Notice, Comment)
+from app.api.serializers import UserSerializer
 
 api_bp = Blueprint('api', url_prefix='/api')
 
 
 class UserView(HTTPMethodView):
 
+    @staticmethod
     @login_required()
-    async def get(self, request):
-        return text('I am get method')
+    async def get(request, *args, **kwargs):
+        user = request.app.user
+        print(user.avatar)
+
+        return json(user)
 
     async def post(self, request):
         """login or create user"""
@@ -38,10 +43,27 @@ class UserView(HTTPMethodView):
             pwd = data['password']
             password = encrypt_password(pwd)
 
-            user = await request.app.db.create(User, username=username, password=password)
+            try:
+                await request.app.db.get(User, username=username)
+            except User.DoesNotExist:
+                user = await request.app.db.create(User, username=username, password=password)
+                token = generate_token()
+                user_id = user._data['id']
+                await request.app.db.create(Token, user_id=user_id, token=token)
+            else:
+                try:
+                    user = await request.app.db.get(User, username=username, password=password)
+                    user_id = user._data['id']
+                except User.DoesNotExist:
+                    return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PASSWORD}, 400)
 
-            results = {'user': user}
-            return json(results, 201)
+            serializer = UserSerializer(user._data)
+
+            token, created = await request.app.db.get_or_create(Token, user_id=user_id)
+
+            results = serializer.data
+            results['token'] = token.token
+            return json(results, 200)
 
     async def put(self, request):
         return text('I am put method')

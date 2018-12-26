@@ -8,4 +8,4 @@
 MSG_KEYWORD = 'detail'
 
 MSG_ERROR_PARAMETER = 'Parameter error'
-MSG_ERROR_ALREADY_REGISTER = 'Username already register'
+MSG_ERROR_PASSWORD = 'Password error'

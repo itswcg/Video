@@ -9,7 +9,7 @@ import datetime
 
 from app.config import CONFIG
 
-from peewee import Model, CharField, IntegerField, DateTimeField, ForeignKeyField, BooleanField, PrimaryKeyField
+from peewee import Model, CharField, DateTimeField, ForeignKeyField, BooleanField, IntegerField
 
 
 class BaseModel(Model):
@@ -29,8 +29,8 @@ class User(BaseModel):
 
 
 class Token(BaseModel):
-    user = ForeignKeyField(User, related_name='token')
-    token = CharField(verbose_name='token', max_length=512)
+    user_id = IntegerField(verbose_name='user_id', unique=True)
+    token = CharField(verbose_name='token', max_length=512, unique=True)
 
 
 class Video(BaseModel):
