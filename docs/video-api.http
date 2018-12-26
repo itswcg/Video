@@ -13,7 +13,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "username": "wcg3",
+  "username": "wcg4",
   "password": "itswcg"
 }
 
@@ -30,6 +30,10 @@ Content-Type: application/json
 Authorization: Token {{user_token}}
 
 {
+  "password": "hhhh",
+  "avatar": "blog.itswcg.com",
+  "phone": "18502860494",
+  "email": "itswcg@gmail.com"
 }
 
 ### 获取我的视频

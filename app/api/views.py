@@ -28,7 +28,6 @@ class UserView(HTTPMethodView):
     @login_required()
     async def get(request, *args, **kwargs):
         user = request.app.user
-        print(user.avatar)
 
         return json(user)
 
@@ -40,20 +39,19 @@ class UserView(HTTPMethodView):
             return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
         else:
             username = data['username']
-            pwd = data['password']
-            password = encrypt_password(pwd)
+            password = encrypt_password(data['password'])
 
             try:
                 await request.app.db.get(User, username=username)
             except User.DoesNotExist:
                 user = await request.app.db.create(User, username=username, password=password)
                 token = generate_token()
-                user_id = user._data['id']
+                user_id = getattr(user, 'id')
                 await request.app.db.create(Token, user_id=user_id, token=token)
             else:
                 try:
                     user = await request.app.db.get(User, username=username, password=password)
-                    user_id = user._data['id']
+                    user_id = getattr(user, 'id')
                 except User.DoesNotExist:
                     return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PASSWORD}, 400)
 
@@ -65,17 +63,32 @@ class UserView(HTTPMethodView):
             results['token'] = token.token
             return json(results, 200)
 
-    async def put(self, request):
-        return text('I am put method')
+    @staticmethod
+    @login_required()
+    async def patch(request):
+        """Patch user info"""
+        user = request.app.user
+        data = request.json
+        keys = data.keys()
 
-    async def patch(self, request):
-        return text('I am patch method')
+        allow_fields = ['password', 'avatar', 'email', 'phone']
+        if any([_ not in allow_fields for _ in keys]):
+            return json({cs.MSG_KEYWORD: cs.MSG_ERROR_FIELD}, 400)
 
-    async def delete(self, request):
-        return text('I am delete method')
+        for field in keys:
+            if field == 'password':
+                password = encrypt_password(data.get(field))
+                data[field] = password
+            setattr(user, field, data.get(field))
+
+        await request.app.db.update(user)
+        serializer = UserSerializer(user._data)
+
+        return json(serializer.data, 200)
 
 
 class VideoView(HTTPMethodView):
+    decorators = [login_required()]
 
     def get(self, request):
         pass

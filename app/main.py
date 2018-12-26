@@ -21,7 +21,7 @@ app.register_listener(close_db, 'after_server_stop')
 
 
 @app.middleware('response')
-async def custom_banner(request, response):
+async def set_headers(request, response):
     response.headers["content-type"] = "application/json; charset=utf-8"
 
 

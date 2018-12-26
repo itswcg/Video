@@ -9,3 +9,4 @@ MSG_KEYWORD = 'detail'
 
 MSG_ERROR_PARAMETER = 'Parameter error'
 MSG_ERROR_PASSWORD = 'Password error'
+MSG_ERROR_FIELD = 'Field error'
