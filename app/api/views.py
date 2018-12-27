@@ -11,12 +11,16 @@ from sanic.views import HTTPMethodView
 from sanic.response import json
 from sanic.log import logger
 
+from app.config import CONFIG
+
 from app.utils.decorator import login_required
 from app.utils.functions import encrypt_password, generate_token
+
 from app.api import constants as cs
+from app.api.serializers import UserSerializer, VideoSerializer
+from app.api.pagination import BasePage
 
 from app.db.models import (User, Token, Video, Task, Notice, Comment)
-from app.api.serializers import UserSerializer
 
 api_bp = Blueprint('api', url_prefix='/api')
 
@@ -50,16 +54,12 @@ class UserView(HTTPMethodView):
             else:
                 try:
                     user = await request.app.db.get(User, username=username, password=password)
-                    user_id = getattr(user, 'id')
                 except User.DoesNotExist:
                     return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PASSWORD}, 400)
 
-            serializer = UserSerializer(user._data)
+            serializer = UserSerializer(request, user._data)
+            results = await serializer.data
 
-            token, created = await request.app.db.get_or_create(Token, user_id=user_id)
-
-            results = serializer.data
-            results['token'] = token.token
             return json(results, 200)
 
     @staticmethod
@@ -81,9 +81,9 @@ class UserView(HTTPMethodView):
             setattr(user, field, data.get(field))
 
         await request.app.db.update(user)
-        serializer = UserSerializer(user._data)
-
-        return json(serializer.data, 200)
+        serializer = UserSerializer(request, user._data)
+        results = await serializer.data
+        return json(results, 200)
 
 
 class VideoView(HTTPMethodView):
@@ -104,10 +104,29 @@ class MyVideoView(HTTPMethodView):
     decorators = [login_required()]
 
     async def get(self, request):
-        pass
+        user = request.app.user
+
+        query = Video.select().filter(user=user).order_by(Video.id.desc())
+
+        page = BasePage(request, query)
+        serializer = VideoSerializer(request, await page.data, many=True)
+        results = await serializer.data
+
+        return json(results, 200)
 
     async def post(self, request):
-        pass
+        user = request.app.user
+        data = request.json
+
+        if any([_ not in data for _ in ('name', 'video_url', 'cover_url')]):
+            return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
+
+        video = await request.app.db.create(Video, user=user, name=data['name'], video_url=data['video_url'],
+                                            cover_url=data['cover_url'])
+
+        # serializer = VideoSerializer(video._data)
+        print(video._data)
+        return json({}, 200)
 
 
 class TaskView(HTTPMethodView):
@@ -132,7 +151,20 @@ class NoticeView(HTTPMethodView):
 
 @login_required()
 async def comment(request):
-    pass
+    user = request.app.user
+    data = request.json
+
+    if 'video_id' not in data or 'content' not in data:
+        return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
+
+    try:
+        video = await request.app.db.get(Video, id=data['video_id'])
+    except Video.DoesNotExist:
+        return json({cs.MSG_KEYWORD: cs.MSG_VIDEO_DELETE}, 200)
+    else:
+        await request.app.db.create(Comment, user=user, video=video, content=data['content'])
+
+        return json({cs.MSG_KEYWORD: cs.MSG_SUCCESS_COMMENT}, 200)
 
 
 @login_required()

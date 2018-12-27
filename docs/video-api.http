@@ -13,7 +13,7 @@ Accept: application/json
 Content-Type: application/json
 
 {
-  "username": "wcg4",
+  "username": "wcg",
   "password": "itswcg"
 }
 
@@ -30,8 +30,8 @@ Content-Type: application/json
 Authorization: Token {{user_token}}
 
 {
-  "password": "hhhh",
-  "avatar": "blog.itswcg.com",
+  "password": "itswcg",
+  "avatar": "http://blog.itswcg.com",
   "phone": "18502860494",
   "email": "itswcg@gmail.com"
 }
@@ -47,6 +47,12 @@ POST {{base_url}}/my-video/
 Accept: application/json
 Content-Type: application/json
 Authorization: Token {{user_token}}
+
+{
+  "name": "大尺度",
+  "video_url": "blog.itswcg.com",
+  "cover_url": "www"
+}
 
 ### 获取推荐视频
 GET {{base_url}}/video/?type=recommend
@@ -70,6 +76,10 @@ Accept: application/json
 Content-Type: application/json
 Authorization: Token {{user_token}}
 
+{
+  "name": "下载视频任务1"
+}
+
 ### 获取我的通知
 GET {{base_url}}/notice/
 Accept: application/json
@@ -82,14 +92,28 @@ Accept: application/json
 Content-Type: application/json
 Authorization: Token {{user_token}}
 
+{
+  "type": "single",
+  "notice_id": 1
+}
+
 ### 评论
 POST {{base_url}}/comment/
 Accept: application/json
 Content-Type: application/json
 Authorization: Token {{user_token}}
 
+{
+  "video_id": 1,
+  "content": "nice"
+}
+
 ### 点赞
 POST {{base_url}}/like/
 Accept: application/json
 Content-Type: application/json
+
+{
+  "video_id": 1
+}
 

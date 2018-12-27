@@ -19,3 +19,4 @@ class BaseConfig:
     SECRET_KEY = 'itswcg'
     DEBUG = True
     ACCESS_LOG = True
+    PAGE_SIZE = 5
