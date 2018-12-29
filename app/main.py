@@ -12,7 +12,7 @@ from app.db import init_db, close_db
 from app.api.views import api_bp
 
 app = Sanic('video')
-app.config.LOGO = 'itswcg'
+app.config.LOGO = 'Video by itswcg'
 app.config.from_object(CONFIG)
 CORS(app, automatic_options=True)  # cors
 

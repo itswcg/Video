@@ -167,9 +167,16 @@ async def comment(request):
         return json({cs.MSG_KEYWORD: cs.MSG_SUCCESS_COMMENT}, 200)
 
 
-@login_required()
 async def like(request):
-    pass
+    data = request.json
+
+    if 'video_id' not in data:
+        return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
+
+    async with request.app.redis.get() as con:
+        likes = await con.execute('incr', cs.REDIS_VIDEO_LIKE.format(data['video_id']))
+
+    return json({'likes': likes}, 200)
 
 
 api_bp.add_route(UserView.as_view(), '/user')

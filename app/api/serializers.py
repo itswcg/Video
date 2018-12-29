@@ -8,6 +8,7 @@
 import copy
 
 from app.db.models import User, Token, Comment, Video
+from app.api import constants as cs
 
 
 class BaseSerializer:
@@ -50,23 +51,29 @@ class UserSerializer(BaseSerializer):
 
 
 class VideoSerializer(BaseSerializer):
-    fields = ['video_id', 'avatar', 'name', 'cover_url', 'video_url', 'create_time', 'comments', 'likes']
+    fields = ['video_id', 'video_user', 'name', 'cover_url', 'video_url', 'create_time', 'comments', 'likes']
 
     async def video_id(self):
         return self.model['id']
 
+    async def video_user(self):
+        user = await self.request.app.db.get(User, id=self.model['user'])
+        return {'username': user.username, 'avatar': user.avatar}
+
     async def comments(self):
         comments = await self.request.app.db.execute(Comment.select().join(Video))
 
-        return [_._data for _ in comments]
+        return [await CommentSerializer(self.request, _._data).data for _ in comments]
 
     async def likes(self):
-        return ''
-
-    async def avatar(self):
-        user = await self.request.app.db.get(User, id=self.model['user'])
-        return user.avatar
+        async with self.request.app.redis.get() as con:
+            likes = await con.execute('get', cs.REDIS_VIDEO_LIKE.format(self.model['id']))
+        return likes or '0'
 
 
 class CommentSerializer(BaseSerializer):
-    fields = []
+    fields = ['comment_user', 'content', 'create_time']
+
+    async def comment_user(self):
+        user = await self.request.app.db.get(User, id=self.model['user'])
+        return {'username': user.username, 'avatar': user.avatar}

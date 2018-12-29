@@ -28,7 +28,7 @@ async def init_db(app, loop):
     app.db = peewee_async.Manager(database)
     app.db.connect()
 
-    app.redis_pool = await aioredis.create_pool(
+    app.redis = await aioredis.create_pool(
         (REDIS_CONFIG['HOST'], REDIS_CONFIG['PORT']),
         db=int(REDIS_CONFIG['DB']),
         password=REDIS_CONFIG['PASSWORD'],
@@ -44,8 +44,8 @@ async def close_db(app, loop):
     """
     app.db.close()
 
-    app.redis_pool.close()
-    await app.redis_pool.wait_closed()
+    app.redis.close()
+    await app.redis.wait_closed()
 
 
 def create_table():
