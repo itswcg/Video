@@ -9,7 +9,7 @@ import datetime
 
 from app.config import CONFIG
 
-from peewee import Model, CharField, DateTimeField, ForeignKeyField, BooleanField, IntegerField
+from peewee import Model, CharField, DateTimeField, ForeignKeyField, IntegerField
 
 
 class BaseModel(Model):
@@ -24,8 +24,8 @@ class User(BaseModel):
     username = CharField(verbose_name='username', max_length=32, unique=True)
     password = CharField(verbose_name='password', max_length=512)
     avatar = CharField(verbose_name='avatar', max_length=512, default=CONFIG.DEFAULT_USER_AVATAR)
-    email = CharField(verbose_name='email', max_length=52, null=True)
-    phone = CharField(verbose_name='phone', max_length=11, null=True)
+    email = CharField(verbose_name='email', max_length=52, default='')
+    phone = CharField(verbose_name='phone', max_length=11, default='')
 
 
 class Token(BaseModel):
@@ -38,18 +38,19 @@ class Video(BaseModel):
     name = CharField(verbose_name='name', max_length=52)
     video_url = CharField(verbose_name='video_url', max_length=512)
     cover_url = CharField(verbose_name='cover_url', max_length=512)
+    score = IntegerField(verbose_name='recommend_score', default=0)
 
 
 class Task(BaseModel):
     user = ForeignKeyField(User, related_name='task')
     name = CharField(verbose_name='task', max_length=32)
-    complete = BooleanField(verbose_name='complete', default=False)
+    is_complete = IntegerField(verbose_name='is_complete', default=0)
 
 
 class Notice(BaseModel):
     user = ForeignKeyField(User, related_name='notice')
     content = CharField(verbose_name='content', max_length=128)
-    is_read = BooleanField(verbose_name='is_read', default=False)
+    is_read = IntegerField(verbose_name='is_read', default=0)
 
 
 class Comment(BaseModel):

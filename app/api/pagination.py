@@ -38,3 +38,11 @@ class BasePage:
 
 class VideoPage(BasePage):
     page_size = 12
+
+
+class NoticePage(BasePage):
+    page_size = 5
+
+
+class TaskPage(BasePage):
+    page_size = 10

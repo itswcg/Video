@@ -37,7 +37,7 @@ Authorization: Token {{user_token}}
 }
 
 ### 获取我的视频
-GET {{base_url}}/my-video/?page=2
+GET {{base_url}}/my-video/
 Accept: application/json
 Content-Type: application/json
 Authorization: Token {{user_token}}
@@ -49,9 +49,9 @@ Content-Type: application/json
 Authorization: Token {{user_token}}
 
 {
-  "name": "大尺度",
-  "video_url": "blog.itswcg.com",
-  "cover_url": "www"
+  "name": "大尺度电影",
+  "video_url": "http://blog.itswcg.com",
+  "cover_url": "http://blog.itswcg.com"
 }
 
 ### 获取推荐视频
@@ -61,6 +61,11 @@ Content-Type: application/json
 
 ### 获取最近下载视频
 GET {{base_url}}/video/?type=recent
+Accept: application/json
+Content-Type: application/json
+
+### 获取单个视频
+GET {{base_url}}/video/?video_id=1
 Accept: application/json
 Content-Type: application/json
 
@@ -95,6 +100,16 @@ Authorization: Token {{user_token}}
 {
   "type": "single",
   "notice_id": 1
+}
+
+### 标记全部通知为已读
+POST {{base_url}}/notice/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token {{user_token}}
+
+{
+  "type": "all"
 }
 
 ### 评论

@@ -17,8 +17,8 @@ from app.utils.decorator import login_required
 from app.utils.functions import encrypt_password, generate_token
 
 from app.api import constants as cs
-from app.api.serializers import UserSerializer, VideoSerializer
-from app.api.pagination import VideoPage
+from app.api.serializers import UserSerializer, VideoSerializer, NoticeSerializer, TaskSerializer
+from app.api.pagination import VideoPage, NoticePage, TaskPage
 
 from app.db.models import (User, Token, Video, Task, Notice, Comment)
 
@@ -58,7 +58,6 @@ class UserView(HTTPMethodView):
                     user = await request.app.db.get(User, username=username, password=password)
                 except User.DoesNotExist:
                     return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PASSWORD}, 400)
-
             serializer = UserSerializer(request, user._data)
             results = await serializer.data
 
@@ -91,18 +90,37 @@ class UserView(HTTPMethodView):
 class VideoView(HTTPMethodView):
 
     async def get(self, request, *args, **kwargs):
-        """Get recommend or recent video"""
+        """Get recommend or recent video or single video"""
         data = request.raw_args
         if 'type' in data:
             if data['type'] == 'recommend':
-                pass
-            elif data['type'] == 'recent':
+                query = Video.select().order_by(Video.score.desc()).limit(24)
+
+                serializer = VideoSerializer(request, query, many=True)
+                results = await serializer.data
+
+                return json(results, 200)
+
+            if data['type'] == 'recent':
                 query = Video.select().order_by(Video.id.desc()).limit(12)
 
                 serializer = VideoSerializer(request, query, many=True)
                 results = await serializer.data
 
                 return json(results, 200)
+
+        if 'video_id' in data:
+            video = await request.app.db.get(Video, id=data['video_id'])
+
+            serializer = VideoSerializer(request, video._data)
+            results = await serializer.data
+
+            async with request.app.redis.get() as con:
+                await con.execute('incr', cs.REDIS_VIDEO_WATCH.format(data['video_id']))
+
+            # Todo score
+
+            return json(results, 200)
 
         return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
 
@@ -141,20 +159,68 @@ class TaskView(HTTPMethodView):
     decorators = [login_required()]
 
     async def get(self, request):
-        pass
+        user = request.app.user
+
+        query = Task.select().filter(user=user).order_by(Task.is_complete)
+
+        page = TaskPage(request, query)
+        serializer = TaskSerializer(request, await page.data, many=True)
+        results = await serializer.data
+
+        return json(results, 200)
 
     async def post(self, request):
-        pass
+        user = request.app.user
+        data = request.json
+
+        if 'name' not in data:
+            return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
+
+        await request.app.db.create(Task, user=user, name=data['name'])
+
+        return json({cs.MSG_KEYWORD: cs.MSG_SUCCESS_DONE}, 200)
 
 
 class NoticeView(HTTPMethodView):
     decorators = [login_required()]
 
     async def get(self, request):
-        pass
+        user = request.app.user
+
+        query = Notice.select().filter(user=user).order_by(Notice.is_read)
+
+        page = NoticePage(request, query)
+        serializer = NoticeSerializer(request, await page.data, many=True)
+        results = await serializer.data
+
+        return json(results, 200)
 
     async def post(self, request):
-        pass
+        user = request.app.user
+        data = request.json
+
+        if 'type' in data:
+            if data['type'] == 'single':
+                notice_id = data.get('notice_id', 0)
+                try:
+                    notice = await request.app.db.get(Notice, id=notice_id)
+                except Notice.DoesNotExist:
+                    return json({cs.MSG_KEYWORD: cs.MSG_ERROR_NOTICE}, 400)
+                else:
+                    notice.is_read = 1
+                    await request.app.db.update(notice)
+
+                    return json({cs.MSG_KEYWORD: cs.MSG_SUCCESS_DONE}, 200)
+
+            if data['type'] == 'all':
+                notices = Notice.select().filter(user=user)
+                for notice in notices:
+                    notice.is_read = 1
+                    await request.app.db.update(notice)
+
+                return json({cs.MSG_KEYWORD: cs.MSG_SUCCESS_DONE}, 200)
+
+        return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
 
 
 @login_required()
@@ -172,6 +238,8 @@ async def comment(request):
     else:
         await request.app.db.create(Comment, user=user, video=video, content=data['content'])
 
+        # Todo 发送notice, score
+
         return json({cs.MSG_KEYWORD: cs.MSG_SUCCESS_COMMENT}, 200)
 
 
@@ -183,6 +251,8 @@ async def like(request):
 
     async with request.app.redis.get() as con:
         likes = await con.execute('incr', cs.REDIS_VIDEO_LIKE.format(data['video_id']))
+
+    # Todo 发送notice, score
 
     return json({'likes': likes}, 200)
 

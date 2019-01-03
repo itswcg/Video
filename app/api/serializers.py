@@ -23,7 +23,7 @@ class BaseSerializer:
         self.model, data = res, {}
         for field in self.fields:
             data[field] = self.model.get(field, None)
-            if not data[field]:
+            if data[field] is None:
                 data[field] = await getattr(self, field)()
 
         return data
@@ -84,3 +84,17 @@ class CommentSerializer(BaseSerializer):
     async def comment_user(self):
         user = await self.request.app.db.get(User, id=self.model['user'])
         return {'username': user.username, 'avatar': user.avatar}
+
+
+class NoticeSerializer(BaseSerializer):
+    fields = ['notice_id', 'content', 'is_read', 'create_time']
+
+    async def notice_id(self):
+        return self.model['id']
+
+
+class TaskSerializer(BaseSerializer):
+    fields = ['task_id', 'name', 'is_complete', 'create_time']
+
+    async def task_id(self):
+        return self.model['id']

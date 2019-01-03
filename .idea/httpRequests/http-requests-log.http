@@ -1,0 +1,526 @@
+GET http://localhost:8000/api/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073918.200.json
+
+###
+
+POST http://localhost:8000/api/like/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "video_id": 2
+}
+
+<> 2019-01-03T073909.200.json
+
+###
+
+POST http://localhost:8000/api/comment/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+{
+  "video_id": 1,
+  "content": "nice"
+}
+
+<> 2019-01-03T073905.200.json
+
+###
+
+POST http://localhost:8000/api/notice/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+{
+  "type": "all"
+}
+
+<> 2019-01-03T073901.200.json
+
+###
+
+POST http://localhost:8000/api/notice/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+{
+  "type": "single",
+  "notice_id": 1
+}
+
+<> 2019-01-03T073857.400.json
+
+###
+
+GET http://localhost:8000/api/notice/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073853.200.json
+
+###
+
+GET http://localhost:8000/api/task/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073844.200.json
+
+###
+
+POST http://localhost:8000/api/task/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+{
+  "name": "下载视频任务1"
+}
+
+<> 2019-01-03T073841.200.json
+
+###
+
+GET http://localhost:8000/api/task/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073838.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T073835.200.json
+
+###
+
+GET http://localhost:8000/api/video/?type=recent
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T073832.200.json
+
+###
+
+GET http://localhost:8000/api/video/?type=recommend
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T073820.200.json
+
+###
+
+GET http://localhost:8000/api/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073814.200.json
+
+###
+
+POST http://localhost:8000/api/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+{
+  "name": "大尺度电影",
+  "video_url": "http://blog.itswcg.com",
+  "cover_url": "http://blog.itswcg.com"
+}
+
+<> 2019-01-03T073809.200.json
+
+###
+
+POST http://localhost:8000/api/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+{
+  "name": "大尺度电影",
+  "video_url": "http://blog.itswcg.com",
+  "cover_url": "http://blog.itswcg.com"
+}
+
+<> 2019-01-03T073742.200.json
+
+###
+
+GET http://localhost:8000/api/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073732.200.json
+
+###
+
+GET http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073727.200.json
+
+###
+
+PATCH http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+{
+  "password": "itswcg",
+  "avatar": "http://blog.itswcg.com",
+  "phone": "18502860494",
+  "email": "itswcg@gmail.com"
+}
+
+<> 2019-01-03T073723.200.json
+
+###
+
+GET http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token 501fed1c-0f4b-11e9-b691-28c63fc95748
+
+<> 2019-01-03T073719.200.json
+
+###
+
+GET http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token e52e89e8-0f48-11e9-bca1-28c63fc95748
+
+<> 2019-01-03T073631.403.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T073628.200.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T073554.200.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T073349.500.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T073255.500.json
+
+###
+
+GET http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token e52e89e8-0f48-11e9-bca1-28c63fc95748
+
+<> 2019-01-03T072043.200.json
+
+###
+
+PATCH http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token e52e89e8-0f48-11e9-bca1-28c63fc95748
+
+{
+  "password": "itswcg",
+  "avatar": "http://blog.itswcg.com",
+  "phone": "18502860494",
+  "email": "itswcg@gmail.com"
+}
+
+<> 2019-01-03T072039.200.json
+
+###
+
+GET http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token e52e89e8-0f48-11e9-bca1-28c63fc95748
+
+<> 2019-01-03T072035.500.json
+
+###
+
+GET http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token bb50eeb8-0903-11e9-a449-28c63fc95748
+
+<> 2019-01-03T071939.403.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T071924.500.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T071655.500.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T071536.500.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T071312.500.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042516.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042513.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042346.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042344.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042342.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042340.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042233-1.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042233.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042231.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T042152.200.json
+
+###
+
+GET http://localhost:8000/api/video/?video_id=1
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T025437.200.json
+
+###
+
+GET http://localhost:8000/api/video/?type=recent
+Accept: application/json
+Content-Type: application/json
+
+<> 2019-01-03T023755.200.json
+
+###
+
+POST http://localhost:8000/api/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token bb50eeb8-0903-11e9-a449-28c63fc95748
+
+{
+  "name": "大尺度",
+  "video_url": "blog.itswcg.com",
+  "cover_url": "www"
+}
+
+<> 2019-01-03T023741.200.json
+
+###
+
+GET http://localhost:8000/api/my-video/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token bb50eeb8-0903-11e9-a449-28c63fc95748
+
+<> 2019-01-03T023402.200.json
+
+###
+
+GET http://localhost:8000/api/my-video/?page=2
+Accept: application/json
+Content-Type: application/json
+Authorization: Token bb50eeb8-0903-11e9-a449-28c63fc95748
+
+<> 2019-01-03T023355.200.json
+
+###
+
+PATCH http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token bb50eeb8-0903-11e9-a449-28c63fc95748
+
+{
+  "password": "itswcg",
+  "avatar": "http://blog.itswcg.com",
+  "phone": "18502860494",
+  "email": "itswcg@gmail.com"
+}
+
+<> 2019-01-03T023348.200.json
+
+###
+
+GET http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+Authorization: Token bb50eeb8-0903-11e9-a449-28c63fc95748
+
+<> 2019-01-03T023340.200.json
+
+###
+
+POST http://localhost:8000/api/user/
+Accept: application/json
+Content-Type: application/json
+
+{
+  "username": "wcg",
+  "password": "itswcg"
+}
+
+<> 2019-01-03T023336.200.json
+
+###
+
