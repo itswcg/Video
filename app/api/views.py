@@ -18,7 +18,7 @@ from app.utils.functions import encrypt_password, generate_token
 
 from app.api import constants as cs
 from app.api.serializers import UserSerializer, VideoSerializer
-from app.api.pagination import BasePage
+from app.api.pagination import VideoPage
 
 from app.db.models import (User, Token, Video, Task, Notice, Comment)
 
@@ -31,8 +31,10 @@ class UserView(HTTPMethodView):
     @login_required()
     async def get(request, *args, **kwargs):
         user = request.app.user
+        serializer = UserSerializer(request, user._data)
+        results = await serializer.data
 
-        return json(user)
+        return json(results, 200)
 
     async def post(self, request):
         """login or create user"""
@@ -95,7 +97,12 @@ class VideoView(HTTPMethodView):
             if data['type'] == 'recommend':
                 pass
             elif data['type'] == 'recent':
-                pass
+                query = Video.select().order_by(Video.id.desc()).limit(12)
+
+                serializer = VideoSerializer(request, query, many=True)
+                results = await serializer.data
+
+                return json(results, 200)
 
         return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
 
@@ -108,7 +115,7 @@ class MyVideoView(HTTPMethodView):
 
         query = Video.select().filter(user=user).order_by(Video.id.desc())
 
-        page = BasePage(request, query)
+        page = VideoPage(request, query)
         serializer = VideoSerializer(request, await page.data, many=True)
         results = await serializer.data
 
@@ -124,9 +131,10 @@ class MyVideoView(HTTPMethodView):
         video = await request.app.db.create(Video, user=user, name=data['name'], video_url=data['video_url'],
                                             cover_url=data['cover_url'])
 
-        # serializer = VideoSerializer(video._data)
-        print(video._data)
-        return json({}, 200)
+        serializer = VideoSerializer(request, video._data)
+        results = await serializer.data
+
+        return json(results, 200)
 
 
 class TaskView(HTTPMethodView):

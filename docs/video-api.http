@@ -37,7 +37,7 @@ Authorization: Token {{user_token}}
 }
 
 ### 获取我的视频
-GET {{base_url}}/my-video/
+GET {{base_url}}/my-video/?page=2
 Accept: application/json
 Content-Type: application/json
 Authorization: Token {{user_token}}

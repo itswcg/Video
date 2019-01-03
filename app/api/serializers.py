@@ -19,27 +19,34 @@ class BaseSerializer:
         self.model = model
         self.many = many
 
+    async def get_data(self, res):
+        self.model, data = res, {}
+        for field in self.fields:
+            data[field] = self.model.get(field, None)
+            if not data[field]:
+                data[field] = await getattr(self, field)()
+
+        return data
+
     @property
     async def data(self):
         if self.many:
-            results, serializer_data = copy.deepcopy(self.model), []
-            for result in results['results']:
-                self.model, data = result, {}
-                for field in self.fields:
-                    data[field] = result.get(field, None)
-                    if not data[field]:
-                        data[field] = await getattr(self, field)()
-                serializer_data.append(data)
-            results['results'] = serializer_data
-            return results
+            if 'results' in self.model:  # page serializer
+                serializer_results, serializer_data = copy.deepcopy(self.model), []
+                for res in serializer_results['results']:
+                    data = await self.get_data(res)
+                    serializer_data.append(data)
+                serializer_results['results'] = serializer_data
+                return serializer_results
+            else:  # query serializer
+                serializer_results = []
+                for res in self.model:
+                    data = await self.get_data(res._data)
+                    serializer_results.append(data)
+                return serializer_results
 
-        else:
-            data = {}
-            for field in self.fields:
-                data[field] = self.model.get(field, None)
-                if not data[field]:
-                    data[field] = await getattr(self, field)()
-            return data
+        else:  # get serializer
+            return await self.get_data(self.model)
 
 
 class UserSerializer(BaseSerializer):
@@ -61,7 +68,7 @@ class VideoSerializer(BaseSerializer):
         return {'username': user.username, 'avatar': user.avatar}
 
     async def comments(self):
-        comments = await self.request.app.db.execute(Comment.select().join(Video))
+        comments = await self.request.app.db.execute(Comment.select().join(Video).where(Video.id == self.model['id']))
 
         return [await CommentSerializer(self.request, _._data).data for _ in comments]
 
