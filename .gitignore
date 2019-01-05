@@ -105,6 +105,10 @@ venv.bak/
 
 # pycharm
 .idea/
+.idea/httpRequests/
+
+# archlinux
+.directory
 
 # prod config
 prod_config.py
