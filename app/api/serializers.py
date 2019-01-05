@@ -87,7 +87,7 @@ class CommentSerializer(BaseSerializer):
 
 
 class NoticeSerializer(BaseSerializer):
-    fields = ['notice_id', 'content', 'is_read', 'create_time']
+    fields = ['notice_id', 'content', 'notice_type', 'extra_data', 'is_read', 'create_time']
 
     async def notice_id(self):
         return self.model['id']
