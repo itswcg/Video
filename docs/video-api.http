@@ -64,6 +64,16 @@ GET {{base_url}}/video/?type=recent
 Accept: application/json
 Content-Type: application/json
 
+### 获取全部视频
+GET {{base_url}}/video/?type=all
+Accept: application/json
+Content-Type: application/json
+
+### 搜索视频
+GET {{base_url}}/video/?search=大尺度
+Accept: application/json
+Content-Type: application/json
+
 ### 获取单个视频
 GET {{base_url}}/video/?video_id=1
 Accept: application/json
@@ -119,7 +129,7 @@ Content-Type: application/json
 Authorization: Token {{user_token}}
 
 {
-  "video_id": 1,
+  "video_id": 2,
   "content": "nice"
 }
 

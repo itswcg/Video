@@ -24,3 +24,8 @@ class DevConfig(BaseConfig):
         'PASSWORD': '',
         'DB': '0'
     }
+
+    CELERY = {
+        'CELERY_BROKER_URL': 'redis://localhost:6379/1',
+        'CELERY_RESULT_BACKEND': 'redis://localhost:6379/1'
+    }

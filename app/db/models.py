@@ -38,7 +38,6 @@ class Video(BaseModel):
     name = CharField(verbose_name='name', max_length=52)
     video_url = CharField(verbose_name='video_url', max_length=512)
     cover_url = CharField(verbose_name='cover_url', max_length=512)
-    score = IntegerField(verbose_name='recommend_score', default=0)
 
 
 class Task(BaseModel):
@@ -50,6 +49,8 @@ class Task(BaseModel):
 class Notice(BaseModel):
     user = ForeignKeyField(User, related_name='notice')
     content = CharField(verbose_name='content', max_length=128)
+    notice_type = IntegerField(verbose_name='notice_type', default=0, help_text='{0: 系统通知, 1: 视频评论, 2: 视频点赞}')
+    extra_data = CharField(verbose_name='extra_data', max_length=512)
     is_read = IntegerField(verbose_name='is_read', default=0)
 
 

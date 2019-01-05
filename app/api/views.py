@@ -90,11 +90,17 @@ class UserView(HTTPMethodView):
 class VideoView(HTTPMethodView):
 
     async def get(self, request, *args, **kwargs):
-        """Get recommend or recent video or single video"""
+        """Get recommend or recent or single or all or search video"""
         data = request.raw_args
         if 'type' in data:
             if data['type'] == 'recommend':
-                query = Video.select().order_by(Video.score.desc()).limit(24)
+                async with request.app.redis.get() as con:
+                    recommend_videos = await con.execute('zrevrange', cs.REDIS_VIDEO_RECOMMEND, 0, 12)
+
+                print(recommend_videos)
+
+                query = Video.select().where(Video.id.in_(recommend_videos)).order_by(
+                    Video.id.desc())  # Todo order_by list
 
                 serializer = VideoSerializer(request, query, many=True)
                 results = await serializer.data
@@ -109,6 +115,15 @@ class VideoView(HTTPMethodView):
 
                 return json(results, 200)
 
+            if data['type'] == 'all':
+                query = Video.select().order_by(Video.id.desc())
+
+                page = VideoPage(request, query)
+                serializer = VideoSerializer(request, await page.data, many=True)
+                results = await serializer.data
+
+                return json(results, 200)
+
         if 'video_id' in data:
             video = await request.app.db.get(Video, id=data['video_id'])
 
@@ -118,7 +133,16 @@ class VideoView(HTTPMethodView):
             async with request.app.redis.get() as con:
                 await con.execute('incr', cs.REDIS_VIDEO_WATCH.format(data['video_id']))
 
-            # Todo score
+            return json(results, 200)
+
+        if 'search' in data:
+            search_name = data.get('search')
+
+            query = Video.select().where(Video.name.contains(search_name))
+
+            page = VideoPage(request, query)
+            serializer = VideoSerializer(request, await page.data, many=True)
+            results = await serializer.data
 
             return json(results, 200)
 
@@ -238,7 +262,15 @@ async def comment(request):
     else:
         await request.app.db.create(Comment, user=user, video=video, content=data['content'])
 
-        # Todo 发送notice, score
+        async with request.app.redis.get() as con:
+            await con.execute('incr', cs.REDIS_VIDEO_COMMENT.format(data['video_id']))
+
+        if user != video.user:
+            await request.app.db.create(Notice,
+                                        user=video.user,
+                                        content=cs.MSG_NOTICE_COMMENT.format(user.username, video.name),
+                                        notice_type=1,
+                                        extra_data=video.video_url)
 
         return json({cs.MSG_KEYWORD: cs.MSG_SUCCESS_COMMENT}, 200)
 
@@ -249,12 +281,21 @@ async def like(request):
     if 'video_id' not in data:
         return json({cs.MSG_KEYWORD: cs.MSG_ERROR_PARAMETER}, 400)
 
-    async with request.app.redis.get() as con:
-        likes = await con.execute('incr', cs.REDIS_VIDEO_LIKE.format(data['video_id']))
+    try:
+        video = await request.app.db.get(Video, id=data['video_id'])
+    except Video.DoesNotExist:
+        return json({cs.MSG_KEYWORD: cs.MSG_VIDEO_DELETE}, 200)
+    else:
+        async with request.app.redis.get() as con:
+            likes = await con.execute('incr', cs.REDIS_VIDEO_LIKE.format(data['video_id']))
 
-    # Todo 发送notice, score
+        await request.app.db.create(Notice,
+                                    user=video.user,
+                                    content=cs.MSG_NOTICE_LIKE,
+                                    notice_type=2,
+                                    extra_data=video.video_url)
 
-    return json({'likes': likes}, 200)
+        return json({'likes': likes}, 200)
 
 
 api_bp.add_route(UserView.as_view(), '/user')
