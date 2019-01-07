@@ -291,7 +291,7 @@ async def like(request):
 
         await request.app.db.create(Notice,
                                     user=video.user,
-                                    content=cs.MSG_NOTICE_LIKE,
+                                    content=cs.MSG_NOTICE_LIKE.format(video.name),
                                     notice_type=2,
                                     extra_data=video.video_url)
 

@@ -17,7 +17,7 @@ MSG_SUCCESS_COMMENT = '评论成功'
 MSG_SUCCESS_DONE = '操作成功'
 
 MSG_VIDEO_DELETE = '视频已被移除'
-MSG_NOTICE_COMMENT = '{}评论了你的视频：{}'
+MSG_NOTICE_COMMENT = '{} 评论了你的视频：{}'
 MSG_NOTICE_LIKE = '有人点赞了你的视频：{}'
 
 REDIS_VIDEO_LIKE = 'video:{}:likes'
